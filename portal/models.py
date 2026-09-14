@@ -42,7 +42,7 @@ class PaymentTransaction(models.Model):
     )
     confidence = models.FloatField()
     source_text = models.TextField()
-    create_at = models.DateTimeField(
+    created_at = models.DateTimeField(
         default=timezone.now,
     )
 
