@@ -1,0 +1,9 @@
+{% if profile.avatar_url %}
+    <img
+        class="profile-avatar{% if size == 'lg' %} profile-avatar-lg{% endif %}"
+        src="{{ profile.avatar_url }}?size=96"
+        alt=""
+    >
+{% else %}
+    <span class="profile-avatar{% if size == 'lg' %} profile-avatar-lg{% endif %}">{{ profile.name|make_list|first|upper }}</span>
+{% endif %}

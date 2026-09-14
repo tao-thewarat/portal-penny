@@ -1,0 +1,90 @@
+{% load sass_version %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>{% block title %}Penny Portal{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% sass_src_v 'portal/scss/main.scss' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="app-shell">
+        {% include "portal/partials/sidebar.html" %}
+
+        <button
+            class="sidebar-overlay"
+            id="sidebarOverlay"
+            type="button"
+            aria-label="ปิดเมนู"
+        ></button>
+
+        <div class="main-shell">
+            {% include "portal/partials/header.html" %}
+
+            <main class="container">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById("sidebar");
+        const menuButton = document.getElementById("menuButton");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+        function setSidebar(open) {
+            sidebar.classList.toggle("open", open);
+            sidebarOverlay.classList.toggle("open", open);
+            document.body.classList.toggle("sidebar-open", open);
+            menuButton.setAttribute("aria-expanded", String(open));
+        }
+
+        menuButton.addEventListener("click", () => {
+            setSidebar(!sidebar.classList.contains("open"));
+        });
+
+        sidebarOverlay.addEventListener("click", () => setSidebar(false));
+
+        window.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") setSidebar(false);
+        });
+
+        const profileDropdown = document.querySelector("[data-profile-dropdown]");
+
+        if (profileDropdown) {
+            const profileButton = profileDropdown.querySelector(".profile");
+
+            function setProfileMenu(open) {
+                profileDropdown.classList.toggle("is-open", open);
+                profileButton.setAttribute("aria-expanded", String(open));
+            }
+
+            profileButton.addEventListener("click", () => {
+                setProfileMenu(!profileDropdown.classList.contains("is-open"));
+            });
+
+            // Close when clicking anywhere outside the dropdown
+            document.addEventListener("click", (event) => {
+                if (!profileDropdown.contains(event.target)) setProfileMenu(false);
+            });
+
+            window.addEventListener("keydown", (event) => {
+                if (event.key === "Escape" && profileDropdown.classList.contains("is-open")) {
+                    setProfileMenu(false);
+                    profileButton.focus();
+                }
+            });
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

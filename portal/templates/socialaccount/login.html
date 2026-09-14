@@ -1,0 +1,120 @@
+{% load sass_version %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>เข้าสู่ระบบ · Penny</title>
+
+    <link rel="stylesheet" href="{% sass_src_v 'portal/scss/pages/login.scss' %}">
+</head>
+
+<body>
+    <div class="auth-page">
+        <section class="auth-panel">
+            <div class="auth-brand">
+                <div class="auth-brand-icon">฿</div>
+                <p class="auth-brand-name">Penny</p>
+            </div>
+
+            <main class="auth-content">
+                <p class="auth-eyebrow">Personal money tracker</p>
+
+                <h1 class="auth-title">
+                    ยินดีต้อนรับกลับมา
+                </h1>
+
+                <p class="auth-description">
+                    เข้าสู่ระบบเพื่อดูและจัดการรายการเงินเข้า–ออกของคุณ
+                </p>
+
+                {# POST to the current URL so allauth keeps ?next= #}
+                <form method="post">
+                    {% csrf_token %}
+
+                    <button type="submit" class="discord-button">
+                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.865-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.028C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.292a.074.074 0 0 1 .078-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                        </svg>
+                        เข้าสู่ระบบด้วย Discord
+                    </button>
+                </form>
+
+                <p class="auth-note">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="4" y="11" width="16" height="10" rx="2"/>
+                        <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+                    </svg>
+                    ยืนยันตัวตนผ่าน Discord · Penny ไม่เก็บรหัสผ่านของคุณ
+                </p>
+            </main>
+
+            <footer class="auth-footer">
+                Penny Portal · 2026
+            </footer>
+        </section>
+
+        <aside class="auth-visual" aria-hidden="true">
+            <div class="auth-visual-art">
+                <svg viewBox="0 0 460 360" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Main card: balance + bar chart -->
+                    <g class="float-slow">
+                        <rect x="60" y="40" width="300" height="220" rx="22" fill="#ffffff"/>
+                        <rect x="84" y="64" width="90" height="10" rx="5" fill="#e5e7eb"/>
+                        <rect x="84" y="84" width="150" height="20" rx="6" fill="#111827"/>
+                        <rect x="290" y="64" width="46" height="24" rx="12" fill="#ecfdf5"/>
+                        <rect x="300" y="73" width="26" height="6" rx="3" fill="#059669"/>
+
+                        <rect x="92"  y="190" width="22" height="46" rx="6" fill="#c7d2fe"/>
+                        <rect x="130" y="160" width="22" height="76" rx="6" fill="#a5b4fc"/>
+                        <rect x="168" y="176" width="22" height="60" rx="6" fill="#c7d2fe"/>
+                        <rect x="206" y="138" width="22" height="98" rx="6" fill="#6366f1"/>
+                        <rect x="244" y="168" width="22" height="68" rx="6" fill="#a5b4fc"/>
+                        <rect x="282" y="150" width="22" height="86" rx="6" fill="#818cf8"/>
+                        <rect x="320" y="184" width="22" height="52" rx="6" fill="#c7d2fe"/>
+                    </g>
+
+                    <!-- Transaction rows -->
+                    <g class="float-fast">
+                        <rect x="232" y="228" width="200" height="110" rx="18" fill="#ffffff"/>
+                        <circle cx="258" cy="258" r="12" fill="#ecfdf5"/>
+                        <path d="M258 264v-12m-5 5 5-5 5 5" stroke="#059669" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <rect x="280" y="252" width="70" height="8" rx="4" fill="#e5e7eb"/>
+                        <rect x="370" y="252" width="44" height="8" rx="4" fill="#059669"/>
+
+                        <circle cx="258" cy="306" r="12" fill="#fef2f2"/>
+                        <path d="M258 300v12m-5-5 5 5 5-5" stroke="#dc2626" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <rect x="280" y="300" width="56" height="8" rx="4" fill="#e5e7eb"/>
+                        <rect x="376" y="300" width="38" height="8" rx="4" fill="#dc2626"/>
+                    </g>
+
+                    <!-- Coins -->
+                    <g class="float-fast">
+                        <circle cx="58" cy="250" r="34" fill="#fbbf24"/>
+                        <circle cx="58" cy="250" r="25" fill="#f59e0b"/>
+                        <text x="58" y="260" text-anchor="middle" font-size="28" font-weight="800" fill="#ffffff" font-family="system-ui, sans-serif">฿</text>
+                    </g>
+                    <g class="float-slow">
+                        <circle cx="390" cy="46" r="22" fill="#fbbf24"/>
+                        <circle cx="390" cy="46" r="15" fill="#f59e0b"/>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="auth-visual-caption">
+                <h2 class="auth-visual-title">
+                    รู้ทุกบาทที่เข้า–ออก
+                </h2>
+
+                <p class="auth-visual-text">
+                    บันทึกรายรับรายจ่าย ดูหมวดหมู่ และติดตามการเงินของคุณได้ในที่เดียว
+                </p>
+            </div>
+        </aside>
+    </div>
+</body>
+</html>

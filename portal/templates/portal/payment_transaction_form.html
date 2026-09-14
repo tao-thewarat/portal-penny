@@ -1,0 +1,126 @@
+{% extends "portal/base.html" %}
+{% load sass_version %}
+
+{% block title %}
+    แก้ไขรายการ
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% sass_src_v 'portal/scss/pages/payment_transaction_form.scss' %}">
+{% endblock %}
+
+{% block content %}
+<div class="transaction-page">
+    <header class="transaction-header">
+        <div class="transaction-title-group">
+            <div class="transaction-title-icon">
+                ✎
+            </div>
+
+            <div>
+                <h1 class="page-title">
+                    แก้ไขรายการ
+                </h1>
+
+                <p class="transaction-reference">
+                    Transaction #{{ transaction.pk }}
+                </p>
+            </div>
+        </div>
+
+        <a
+            href="{% url 'transactions' %}"
+            class="back-button"
+        >
+            <span aria-hidden="true">←</span>
+            <span>กลับหน้ารายการ</span>
+        </a>
+    </header>
+
+    <section class="form-card">
+        <div class="form-card-header">
+            <div>
+                <h2 class="form-card-title">
+                    ข้อมูลรายการ
+                </h2>
+
+                <p class="form-card-description">
+                    ตรวจสอบและแก้ไขรายละเอียดให้ถูกต้อง
+                </p>
+            </div>
+
+            <span class="required-hint">
+                <span class="required-mark">*</span>
+                ข้อมูลที่จำเป็น
+            </span>
+        </div>
+
+        <div class="form-card-body">
+            <form method="post" class="transaction-form">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="form-alert">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="transaction-form-grid">
+                    {% for field in form %}
+                        <div
+                            class="
+                                form-field
+                                {% if field.name == 'note' or field.name == 'source_text' %}
+                                    full-width
+                                {% endif %}
+                            "
+                        >
+                            <label
+                                for="{{ field.id_for_label }}"
+                                class="form-label"
+                            >
+                                {{ field.label }}
+
+                                {% if field.field.required %}
+                                    <span class="required-mark">*</span>
+                                {% endif %}
+                            </label>
+
+                            {{ field }}
+
+                            {% if field.help_text %}
+                                <div class="field-help">
+                                    {{ field.help_text }}
+                                </div>
+                            {% endif %}
+
+                            {% for error in field.errors %}
+                                <div class="field-error">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="form-actions">
+                    <a
+                        href="{% url 'transactions' %}"
+                        class="action-button cancel-button"
+                    >
+                        ยกเลิก
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="action-button save-button"
+                    >
+                        <span aria-hidden="true">✓</span>
+                        บันทึกข้อมูล
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+{% endblock %}

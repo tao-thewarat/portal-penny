@@ -2,7 +2,7 @@ from typing import ClassVar
 
 from rest_framework import serializers
 
-from portal.models import PaymentTransaction
+from portal.models.payment_transaction import PaymentTransaction
 
 
 class PaymentTransactionSerializer(serializers.ModelSerializer):

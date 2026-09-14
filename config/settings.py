@@ -37,14 +37,23 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Django
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",
+    # Local apps
     "portal",
+    # django-allauth
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.discord",
+    # third party
+    "rest_framework",
+    "sass_processor",
 ]
 
 MIDDLEWARE = [
@@ -53,9 +62,25 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+SOCIALACCOUNT_LOGIN_ON_GET = False
+LOGIN_URL = "discord_login"
+LOGIN_REDIRECT_URL = "/transactions/"
+LOGOUT_REDIRECT_URL = "discord_login"
+
+SOCIALACCOUNT_PROVIDERS = {
+    "discord": {
+        "SCOPE": ["identify", "email"],
+    }
+}
 
 ROOT_URLCONF = "config.urls"
 
@@ -69,6 +94,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "portal.context_processors.discord_profile",
             ],
         },
     },
@@ -127,6 +153,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "sass_processor.finders.CssFinder",
+]
+
+# Compiled SCSS output; in DEBUG it compiles on request, otherwise run `compilescss`
+SASS_PROCESSOR_ROOT = STATIC_ROOT
 
 
 # Email

@@ -1,0 +1,47 @@
+{% with url_name=request.resolver_match.url_name %}
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon">฿</div>
+        <div>
+            <p class="brand-name">Penny</p>
+            <p class="brand-description">Personal money tracker</p>
+        </div>
+    </div>
+
+    <p class="sidebar-label">เมนูหลัก</p>
+    <nav class="sidebar-menu" aria-label="เมนูหลัก">
+        <a class="sidebar-link" href="#">
+            <span class="menu-icon">⌂</span>
+            <span>ภาพรวม</span>
+        </a>
+        <a
+            class="sidebar-link{% if url_name == 'transactions' %} active{% endif %}"
+            href="{% url 'transactions' %}"
+            {% if url_name == 'transactions' %}aria-current="page"{% endif %}
+        >
+            <span class="menu-icon">↕</span>
+            <span>รายการเงินเข้า–ออก</span>
+        </a>
+        <a class="sidebar-link" href="#">
+            <span class="menu-icon">◫</span>
+            <span>หมวดหมู่</span>
+        </a>
+        <a class="sidebar-link" href="#">
+            <span class="menu-icon">▥</span>
+            <span>รายงาน</span>
+        </a>
+    </nav>
+
+    <p class="sidebar-label">ระบบ</p>
+    <nav class="sidebar-menu" aria-label="เมนูระบบ">
+        <a class="sidebar-link" href="#">
+            <span class="menu-icon">⚙</span>
+            <span>ตั้งค่า</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        Penny Portal · 2026
+    </div>
+</aside>
+{% endwith %}

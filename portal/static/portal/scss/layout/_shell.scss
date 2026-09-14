@@ -1,0 +1,22 @@
+.app-shell {
+    min-height: 100vh;
+}
+
+.main-shell {
+    min-height: 100vh;
+    margin-left: var(--sidebar-width);
+
+    @media (max-width: $breakpoint-md) {
+        margin-left: 0;
+    }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 36px 24px;
+
+    @media (max-width: $breakpoint-md) {
+        padding: 26px 16px 36px;
+    }
+}
