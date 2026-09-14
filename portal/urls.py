@@ -1,11 +1,16 @@
 from django.urls import path
 
-from .views.payment_transaction import PaymentTransaction
+from .views.payment_transaction import PaymentTransactionView
 
 urlpatterns = [
     path(
         route="transactions/",
-        view=PaymentTransaction.as_view(),
+        view=PaymentTransactionView.as_view(),
         name="transactions",
+    ),
+    path(
+        route="api/transactions",
+        view=PaymentTransactionView.as_view(),
+        name="create_payment_transaction",
     ),
 ]

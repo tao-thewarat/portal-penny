@@ -1,0 +1,30 @@
+exclude: '(^|/)migrations/.*\.py$'
+
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Ruff Check
+        entry: ruff check --fix
+        language: system
+        types: [python]
+
+      - id: ruff-format
+        name: Ruff Format
+        entry: ruff format
+        language: system
+        types: [python]
+
+      - id: django-check
+        name: Django System Check
+        entry: python3 manage.py check
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: django-migrations-check
+        name: Django Migration Check
+        entry: python3 manage.py makemigrations --check --dry-run
+        language: system
+        pass_filenames: false
+        always_run: true
