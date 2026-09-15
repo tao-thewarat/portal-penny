@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 
 from portal.forms import PaymentTransactionForm
 from portal.models.payment_transaction import EntryType, PaymentTransaction
+from portal.permissions import HasBotApiToken
 from portal.serializers.payment_transaction import PaymentTransactionSerializer
 
 
@@ -74,6 +75,18 @@ class PaymentTransactionView(APIView):
                 "expense_by_category": expense_by_category,
             },
         )
+
+
+class PaymentTransactionApiView(APIView):
+    """
+    Where the Penny bot writes transactions. It has no browser session, so this
+    view skips login_required and authenticates with a shared token instead.
+    """
+
+    authentication_classes: ClassVar[list] = []
+    permission_classes: ClassVar[list[type[HasBotApiToken]]] = [
+        HasBotApiToken,
+    ]
 
     def post(self, request, *args, **kwargs):
         serializer = PaymentTransactionSerializer(

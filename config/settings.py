@@ -33,6 +33,10 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = []
 
+# Shared secret the Penny Discord bot sends as `Authorization: Bearer <token>`
+# to POST /api/transactions. Leave it empty to refuse every bot write.
+PENNY_API_TOKEN = os.getenv("PENNY_API_TOKEN", "")
+
 
 # Application definition
 
