@@ -59,50 +59,118 @@
         </section>
 
         <aside class="auth-visual" aria-hidden="true">
-            <div class="auth-visual-art">
-                <svg viewBox="0 0 460 360" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Main card: balance + bar chart -->
-                    <g class="float-slow">
-                        <rect x="60" y="40" width="300" height="220" rx="22" fill="#ffffff"/>
-                        <rect x="84" y="64" width="90" height="10" rx="5" fill="#e5e7eb"/>
-                        <rect x="84" y="84" width="150" height="20" rx="6" fill="#111827"/>
-                        <rect x="290" y="64" width="46" height="24" rx="12" fill="#ecfdf5"/>
-                        <rect x="300" y="73" width="26" height="6" rx="3" fill="#059669"/>
+            <svg class="auth-visual-bg" viewBox="0 0 800 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <filter id="auroraBlur" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="70"/>
+                    </filter>
 
-                        <rect x="92"  y="190" width="22" height="46" rx="6" fill="#c7d2fe"/>
-                        <rect x="130" y="160" width="22" height="76" rx="6" fill="#a5b4fc"/>
-                        <rect x="168" y="176" width="22" height="60" rx="6" fill="#c7d2fe"/>
-                        <rect x="206" y="138" width="22" height="98" rx="6" fill="#6366f1"/>
-                        <rect x="244" y="168" width="22" height="68" rx="6" fill="#a5b4fc"/>
-                        <rect x="282" y="150" width="22" height="86" rx="6" fill="#818cf8"/>
-                        <rect x="320" y="184" width="22" height="52" rx="6" fill="#c7d2fe"/>
+                    <pattern id="dotGrid" width="26" height="26" patternUnits="userSpaceOnUse">
+                        <circle cx="2" cy="2" r="1.4" fill="#ffffff" fill-opacity="0.22"/>
+                    </pattern>
+
+                    <radialGradient id="dotFade" cx="50%" cy="42%" r="55%">
+                        <stop offset="0" stop-color="#ffffff"/>
+                        <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+                    </radialGradient>
+
+                    <mask id="dotMask">
+                        <rect width="800" height="900" fill="url(#dotFade)"/>
+                    </mask>
+
+                    <radialGradient id="orbFill" cx="32%" cy="28%" r="80%">
+                        <stop offset="0" stop-color="#ffffff"/>
+                        <stop offset="0.18" stop-color="#f5d0fe"/>
+                        <stop offset="0.45" stop-color="#a78bfa"/>
+                        <stop offset="0.75" stop-color="#6d28d9"/>
+                        <stop offset="1" stop-color="#1e1b4b"/>
+                    </radialGradient>
+
+                    <radialGradient id="orbGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0.55" stop-color="#a78bfa" stop-opacity="0.55"/>
+                        <stop offset="1" stop-color="#a78bfa" stop-opacity="0"/>
+                    </radialGradient>
+
+                    <linearGradient id="ringStroke" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stop-color="#ffffff" stop-opacity="0.75"/>
+                        <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.08"/>
+                        <stop offset="1" stop-color="#67e8f9" stop-opacity="0.6"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- Aurora glow -->
+                <g filter="url(#auroraBlur)">
+                    <circle class="aurora-blob aurora-blob-1" cx="150" cy="170" r="210" fill="#ec4899" fill-opacity="0.6"/>
+                    <circle class="aurora-blob aurora-blob-2" cx="690" cy="300" r="230" fill="#06b6d4" fill-opacity="0.5"/>
+                    <circle class="aurora-blob aurora-blob-3" cx="360" cy="760" r="260" fill="#8b5cf6" fill-opacity="0.65"/>
+                </g>
+
+                <rect width="800" height="900" fill="url(#dotGrid)" mask="url(#dotMask)"/>
+
+                <!-- Orb with orbits -->
+                <g transform="translate(400 390)">
+                    <circle r="250" fill="url(#orbGlow)"/>
+
+                    <g class="orbit-spin-reverse">
+                        <circle r="270" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-dasharray="2 12" stroke-linecap="round"/>
+                        <circle cx="270" cy="0" r="6" fill="#67e8f9"/>
+                        <circle cx="-190" cy="-192" r="4" fill="#f9a8d4"/>
                     </g>
 
-                    <!-- Transaction rows -->
-                    <g class="float-fast">
-                        <rect x="232" y="228" width="200" height="110" rx="18" fill="#ffffff"/>
-                        <circle cx="258" cy="258" r="12" fill="#ecfdf5"/>
-                        <path d="M258 264v-12m-5 5 5-5 5 5" stroke="#059669" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                        <rect x="280" y="252" width="70" height="8" rx="4" fill="#e5e7eb"/>
-                        <rect x="370" y="252" width="44" height="8" rx="4" fill="#059669"/>
-
-                        <circle cx="258" cy="306" r="12" fill="#fef2f2"/>
-                        <path d="M258 300v12m-5-5 5 5 5-5" stroke="#dc2626" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                        <rect x="280" y="300" width="56" height="8" rx="4" fill="#e5e7eb"/>
-                        <rect x="376" y="300" width="38" height="8" rx="4" fill="#dc2626"/>
+                    <g transform="rotate(-20)">
+                        <ellipse rx="330" ry="96" fill="none" stroke="url(#ringStroke)" stroke-width="1.6"/>
                     </g>
 
-                    <!-- Coins -->
-                    <g class="float-fast">
-                        <circle cx="58" cy="250" r="34" fill="#fbbf24"/>
-                        <circle cx="58" cy="250" r="25" fill="#f59e0b"/>
-                        <text x="58" y="260" text-anchor="middle" font-size="28" font-weight="800" fill="#ffffff" font-family="system-ui, sans-serif">฿</text>
+                    <circle r="140" fill="url(#orbFill)"/>
+                    <ellipse cx="-44" cy="-58" rx="46" ry="26" fill="#ffffff" fill-opacity="0.35" transform="rotate(-30 -44 -58)"/>
+
+                    <!-- Front half of the tilted ring passes over the orb -->
+                    <g transform="rotate(-20)">
+                        <path d="M -330 0 A 330 96 0 0 0 330 0" fill="none" stroke="url(#ringStroke)" stroke-width="1.6"/>
                     </g>
-                    <g class="float-slow">
-                        <circle cx="390" cy="46" r="22" fill="#fbbf24"/>
-                        <circle cx="390" cy="46" r="15" fill="#f59e0b"/>
+
+                    <g class="orbit-spin">
+                        <circle r="200" fill="none" stroke="#ffffff" stroke-opacity="0.1"/>
+                        <circle cx="0" cy="-200" r="9" fill="#ffffff"/>
+                        <circle cx="0" cy="-200" r="18" fill="#ffffff" fill-opacity="0.15"/>
                     </g>
-                </svg>
+                </g>
+
+                <!-- Sparkles -->
+                <g fill="#ffffff">
+                    <path d="M640 120l4 12 12 4-12 4-4 12-4-12-12-4 12-4z" fill-opacity="0.85"/>
+                    <path d="M130 560l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" fill-opacity="0.6"/>
+                    <path d="M700 620l2.5 7.5 7.5 2.5-7.5 2.5-2.5 7.5-2.5-7.5-7.5-2.5 7.5-2.5z" fill-opacity="0.5"/>
+                    <circle cx="560" cy="80" r="2"/>
+                    <circle cx="90" cy="380" r="1.6"/>
+                    <circle cx="740" cy="480" r="1.8"/>
+                </g>
+            </svg>
+
+            <div class="auth-chip auth-chip-top">
+                <span class="auth-chip-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                </span>
+                <div>
+                    <p class="auth-chip-title">ยืนยันตัวตนปลอดภัย</p>
+                    <p class="auth-chip-text">OAuth 2.0 ผ่าน Discord</p>
+                </div>
+            </div>
+
+            <div class="auth-chip auth-chip-bottom">
+                <div class="auth-avatars">
+                    <span>A</span>
+                    <span>M</span>
+                    <span>K</span>
+                    <span>+</span>
+                </div>
+                <div>
+                    <p class="auth-chip-title">คลิกเดียวเข้าใช้งาน</p>
+                    <p class="auth-chip-text">ไม่ต้องจำรหัสผ่านใหม่</p>
+                </div>
             </div>
 
             <div class="auth-visual-caption">

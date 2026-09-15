@@ -5,111 +5,308 @@
     display: flex;
     width: var(--sidebar-width);
     flex-direction: column;
-    padding: 22px 16px;
+    padding: 20px 14px 16px;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
     background:
-        radial-gradient(circle at top left, rgba(99, 102, 241, 0.26), transparent 34%),
-        var(--sidebar);
-    color: white;
-    box-shadow: 12px 0 35px rgba(17, 24, 39, 0.09);
+        radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.32), transparent 38%),
+        radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.18), transparent 42%),
+        linear-gradient(180deg, #151a33 0%, #0f1324 100%);
+    color: #ffffff;
 
     @media (max-width: $breakpoint-md) {
         transform: translateX(-105%);
-        transition: transform 220ms ease;
+        transition:
+            transform 240ms ease,
+            box-shadow 240ms ease;
 
         &.open {
             transform: translateX(0);
+            box-shadow: 24px 0 60px rgba(2, 6, 23, 0.45);
         }
     }
 }
 
-.sidebar-brand {
+// Brand row
+.sidebar-top {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 2px 8px 24px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 6px 18px;
 }
 
-.brand-icon {
+.sidebar-brand {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 12px;
+    border-radius: 12px;
+    color: #ffffff;
+    text-decoration: none;
+
+    &:focus-visible {
+        outline: 2px solid #818cf8;
+        outline-offset: 4px;
+    }
+}
+
+.brand-mark {
     display: grid;
-    width: 44px;
-    height: 44px;
-    flex: 0 0 44px;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
     place-items: center;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #818cf8, #6366f1);
-    color: white;
-    font-size: 23px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 45%, #4338ca 100%);
+    font-size: 21px;
     font-weight: 800;
-    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.35);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        0 10px 24px rgba(99, 102, 241, 0.4);
+}
+
+.brand-text {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
 }
 
 .brand-name {
-    margin: 0;
-    font-size: 19px;
+    font-size: 18px;
     font-weight: 800;
+    letter-spacing: -0.2px;
 }
 
 .brand-description {
-    margin: 2px 0 0;
-    color: var(--sidebar-muted);
-    font-size: 12px;
+    overflow: hidden;
+    color: rgba(226, 232, 240, 0.55);
+    font-size: 11.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebar-close {
+    display: none;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    place-items: center;
+    border: 0;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(226, 232, 240, 0.8);
+    cursor: pointer;
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+    }
+
+    @media (max-width: $breakpoint-md) {
+        display: grid;
+    }
+}
+
+// Navigation
+.sidebar-nav {
+    min-height: 0;
+    flex: 1;
+    margin: 0 -4px;
+    padding: 0 4px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
 }
 
 .sidebar-label {
-    margin: 24px 10px 9px;
-    color: #6b7280;
-    font-size: 10px;
-    font-weight: 800;
+    margin: 14px 12px 8px;
+    color: rgba(226, 232, 240, 0.38);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
 }
 
 .sidebar-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
 .sidebar-link {
+    position: relative;
     display: flex;
+    min-height: 46px;
     align-items: center;
     gap: 12px;
-    min-height: 45px;
-    padding: 10px 12px;
-    border-radius: 11px;
-    color: #d1d5db;
+    padding: 7px 10px;
+    border-radius: 12px;
+    color: rgba(226, 232, 240, 0.72);
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
-    transition: 160ms ease;
+    transition:
+        background 160ms ease,
+        color 160ms ease;
 
-    &:hover {
-        background: rgba(255, 255, 255, 0.07);
-        color: white;
-        transform: translateX(2px);
-    }
-
-    &.active {
-        background: linear-gradient(135deg, #6366f1, #4f46e5);
-        color: white;
-        box-shadow: 0 9px 20px rgba(79, 70, 229, 0.28);
+    &:focus-visible {
+        outline: 2px solid #818cf8;
+        outline-offset: 2px;
     }
 }
 
-.menu-icon {
+a.sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+
+    .sidebar-link-icon {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+    }
+}
+
+.sidebar-link-icon {
     display: grid;
-    width: 24px;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
     place-items: center;
-    font-size: 17px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.04);
+    color: rgba(226, 232, 240, 0.7);
+    transition:
+        background 160ms ease,
+        color 160ms ease,
+        box-shadow 160ms ease;
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.sidebar-link-text {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebar-link.is-active {
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.3), rgba(99, 102, 241, 0.06));
+    color: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(129, 140, 248, 0.22);
+
+    // Accent bar hugging the sidebar edge
+    &::before {
+        position: absolute;
+        top: 11px;
+        bottom: 11px;
+        left: -14px;
+        width: 3px;
+        border-radius: 0 3px 3px 0;
+        background: #818cf8;
+        box-shadow: 0 0 12px rgba(129, 140, 248, 0.8);
+        content: "";
+    }
+
+    .sidebar-link-icon {
+        background: linear-gradient(135deg, #818cf8, #4f46e5);
+        color: #ffffff;
+        box-shadow: 0 6px 16px rgba(79, 70, 229, 0.45);
+    }
+}
+
+.sidebar-link.is-disabled {
+    color: rgba(226, 232, 240, 0.42);
+    cursor: default;
+
+    .sidebar-link-icon {
+        color: rgba(226, 232, 240, 0.4);
+    }
+}
+
+.sidebar-badge {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(226, 232, 240, 0.55);
+    font-size: 10.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+// Discord hint card
+.sidebar-card {
+    position: relative;
+    overflow: hidden;
+    margin: 14px 2px;
+    padding: 16px;
+    border: 1px solid rgba(129, 140, 248, 0.22);
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(88, 101, 242, 0.3), rgba(88, 101, 242, 0.06));
+
+    &::after {
+        position: absolute;
+        top: -38px;
+        right: -38px;
+        width: 110px;
+        height: 110px;
+        border: 18px solid rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+        content: "";
+    }
+
+    @media (max-height: 680px) {
+        display: none;
+    }
+}
+
+.sidebar-card-icon {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 10px;
+    background: #5865f2;
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(88, 101, 242, 0.45);
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.sidebar-card-title {
+    margin: 12px 0 4px;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.sidebar-card-text {
+    margin: 0;
+    color: rgba(226, 232, 240, 0.7);
+    font-size: 12px;
+    line-height: 1.55;
 }
 
 .sidebar-footer {
-    margin-top: auto;
-    padding: 16px 10px 2px;
-    border-top: 1px solid rgba(255, 255, 255, 0.09);
-    color: var(--sidebar-muted);
-    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 8px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    color: rgba(226, 232, 240, 0.4);
+    font-size: 11.5px;
 }
 
 .sidebar-overlay {
@@ -122,8 +319,8 @@
             inset: 0;
             display: block;
             border: 0;
-            background: rgba(17, 24, 39, 0.5);
-            backdrop-filter: blur(2px);
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(3px);
         }
     }
 }

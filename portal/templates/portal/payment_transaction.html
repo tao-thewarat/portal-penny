@@ -1,7 +1,7 @@
 {% extends "portal/base.html" %}
-{% load sass_version %}
+{% load sass_version transaction_ui %}
 
-{% block title %}Payment Transactions{% endblock %}
+{% block title %}รายการเงินเข้า–ออก · Penny{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% sass_src_v 'portal/scss/pages/payment_transaction.scss' %}">
@@ -10,109 +10,288 @@
 {% block content %}
 <header class="page-header">
     <div>
-        <h6 class="page-title">
-            รายการเงินเข้า–ออก
-        </h6>
-
-        <p class="page-description">
-            ตรวจสอบประวัติรายรับและรายจ่ายทั้งหมด
-        </p>
+        <p class="page-eyebrow">ภาพรวมบัญชี</p>
+        <h1 class="page-title">รายการเงินเข้า–ออก</h1>
+        <p class="page-description">ตรวจสอบประวัติรายรับและรายจ่ายทั้งหมดของคุณ</p>
     </div>
 
-    <div class="record-count">
-        {{ transactions|length }} รายการ
-    </div>
+    {% if transactions %}
+        <div class="page-meta">
+            <span class="page-meta-dot"></span>
+            อัปเดตล่าสุด {{ transactions.0.created_at|date:"d/m/Y H:i" }}
+        </div>
+    {% endif %}
 </header>
 
-<section class="table-card">
+<section class="stats-grid" aria-label="สรุปยอด">
+    <article class="stat-card stat-card-balance">
+        <div class="stat-card-top">
+            <span class="stat-label">คงเหลือสุทธิ</span>
+            <span class="stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="2" y="6" width="20" height="14" rx="3"/>
+                    <path d="M16 13h2M2 10h20"/>
+                </svg>
+            </span>
+        </div>
+        <p class="stat-value">
+            {% if summary.balance < 0 %}−{% endif %}{{ summary.balance_abs|floatformat:"2g" }}
+            <span class="stat-currency">THB</span>
+        </p>
+        <p class="stat-sub">รายรับ − รายจ่าย ทั้งหมด</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-card-top">
+            <span class="stat-label">รายรับ</span>
+            <span class="stat-icon stat-icon-income">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M7 17 17 7M9 7h8v8"/>
+                </svg>
+            </span>
+        </div>
+        <p class="stat-value stat-value-income">
+            +{{ summary.income|floatformat:"2g" }}
+            <span class="stat-currency">THB</span>
+        </p>
+        <p class="stat-sub">{{ summary.income_count }} รายการ</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-card-top">
+            <span class="stat-label">รายจ่าย</span>
+            <span class="stat-icon stat-icon-expense">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M17 7 7 17M15 17H7V9"/>
+                </svg>
+            </span>
+        </div>
+        <p class="stat-value stat-value-expense">
+            −{{ summary.expense|floatformat:"2g" }}
+            <span class="stat-currency">THB</span>
+        </p>
+        <p class="stat-sub">{{ summary.expense_count }} รายการ</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-card-top">
+            <span class="stat-label">จำนวนรายการ</span>
+            <span class="stat-icon stat-icon-count">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+                </svg>
+            </span>
+        </div>
+        <p class="stat-value">{{ summary.count }}</p>
+        <p class="stat-sub">{{ expense_by_category|length }} หมวดหมู่รายจ่าย</p>
+    </article>
+</section>
+
+{% if expense_by_category %}
+    <section class="panel category-panel">
+        <div class="panel-header">
+            <h2 class="panel-title">รายจ่ายตามหมวดหมู่</h2>
+            <p class="panel-description">สัดส่วนจากรายจ่ายทั้งหมด {{ summary.expense|floatformat:"2g" }} THB</p>
+        </div>
+
+        <div
+            class="category-bar"
+            role="img"
+            aria-label="สัดส่วนรายจ่ายตามหมวดหมู่"
+        >
+            {% for row in expense_by_category %}
+                <span
+                    class="category-bar-segment tone-{{ row.category|category_tone }}"
+                    style="width: {{ row.percent|floatformat:2 }}%;"
+                    title="{{ row.category|category_label }} {{ row.percent|floatformat:1 }}%"
+                ></span>
+            {% endfor %}
+        </div>
+
+        <ul class="category-legend">
+            {% for row in expense_by_category %}
+                <li class="category-legend-item">
+                    <span class="category-icon tone-{{ row.category|category_tone }}">{{ row.category|category_icon }}</span>
+                    <span class="category-legend-text">
+                        <span class="category-legend-name">{{ row.category|category_label }}</span>
+                        <span class="category-legend-count">{{ row.count }} รายการ</span>
+                    </span>
+                    <span class="category-legend-values">
+                        <span class="category-legend-amount">{{ row.total|floatformat:"2g" }}</span>
+                        <span class="category-legend-percent">{{ row.percent|floatformat:1 }}%</span>
+                    </span>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endif %}
+
+<section class="panel table-panel">
+    <div class="table-toolbar">
+        <div>
+            <h2 class="panel-title">ประวัติรายการ</h2>
+            <p class="panel-description">
+                แสดง <strong data-visible-count>{{ transactions|length }}</strong> จาก {{ transactions|length }} รายการ
+            </p>
+        </div>
+
+        {% if transactions %}
+            <div class="toolbar-controls">
+                <label class="search-field">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"/>
+                        <path d="m20 20-3.5-3.5"/>
+                    </svg>
+                    <input type="search" placeholder="ค้นหาชื่อ โน้ต หรือหมวดหมู่" data-search-input aria-label="ค้นหารายการ">
+                </label>
+
+                <div class="segmented" role="group" aria-label="กรองประเภท">
+                    <button type="button" class="segmented-item is-active" data-filter="all" aria-pressed="true">
+                        ทั้งหมด <span>{{ summary.count }}</span>
+                    </button>
+                    <button type="button" class="segmented-item" data-filter="income" aria-pressed="false">
+                        รายรับ <span>{{ summary.income_count }}</span>
+                    </button>
+                    <button type="button" class="segmented-item" data-filter="expense" aria-pressed="false">
+                        รายจ่าย <span>{{ summary.expense_count }}</span>
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
     {% if transactions %}
         <div class="table-scroll">
-            <table>
+            <table class="tx-table">
                 <thead>
                     <tr>
                         <th>รายการ</th>
-                        <th>ประเภท</th>
-                        <th>จำนวนเงิน</th>
                         <th>หมวดหมู่</th>
-                        <th>วันที่ทำรายการ</th>
-                        <th>วันที่บันทึก</th>
+                        <th>วันที่</th>
+                        <th class="align-right">จำนวนเงิน</th>
+                        <th><span class="visually-hidden">เปิด</span></th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {% for tx in transactions %}
-                        <tr onclick="location.href=this.dataset.url" data-url="{% url 'transaction_form' tx.pk %}">
+                        <tr
+                            class="tx-row"
+                            data-type="{{ tx.type }}"
+                            data-url="{% url 'transaction_form' tx.pk %}"
+                            data-search="{{ tx.name|lower }} {{ tx.note|default:''|lower }} {{ tx.category|lower }} {{ tx.category|category_label }}"
+                        >
                             <td>
-                                <span class="transaction-name">
-                                    {{ tx.name }}
-                                </span>
-
-                                {% if tx.note %}
-                                    <span
-                                        class="transaction-note"
-                                        title="{{ transaction.note }}"
-                                    >
-                                        {{ tx.note }}
-                                    </span>
-                                {% endif %}
+                                <div class="tx-main">
+                                    <span class="category-icon tone-{{ tx.category|category_tone }}">{{ tx.category|category_icon }}</span>
+                                    <div class="tx-text">
+                                        <a class="tx-name" href="{% url 'transaction_form' tx.pk %}">{{ tx.name }}</a>
+                                        {% if tx.note %}
+                                            <span class="tx-note" title="{{ tx.note }}">{{ tx.note }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </td>
 
                             <td>
-                                {% if tx.type == "income" %}
-                                    <span class="badge badge-income">
-                                        ↑ รายรับ
-                                    </span>
-                                {% else %}
-                                    <span class="badge badge-expense">
-                                        ↓ รายจ่าย
-                                    </span>
-                                {% endif %}
-                            </td>
-
-                            <td>
-                                {% if tx.type == "income" %}
-                                    <span class="amount amount-income">
-                                        +{{ tx.amount|floatformat:2 }}
-                                        {{ tx.currency }}
-                                    </span>
-                                {% else %}
-                                    <span class="amount amount-expense">
-                                        -{{ tx.amount|floatformat:2 }}
-                                        {{ tx.currency }}
-                                    </span>
-                                {% endif %}
-                            </td>
-
-                            <td>
-                                <span class="category">
-                                    {{ tx.category }}
+                                <span class="category-pill tone-{{ tx.category|category_tone }}">
+                                    {{ tx.category|category_label }}
                                 </span>
                             </td>
 
-                            <td class="date">
-                                {{ tx.occurred_at|date:"d/m/Y" }}
+                            <td>
+                                <span class="tx-date">{{ tx.occurred_at|date:"d/m/Y" }}</span>
+                                <span class="tx-time">บันทึก {{ tx.created_at|date:"H:i" }}</span>
                             </td>
 
-                            <td class="date">
-                                {{ tx.created_at|date:"d/m/Y H:i" }}
+                            <td class="align-right">
+                                <span class="tx-amount {% if tx.type == 'income' %}is-income{% else %}is-expense{% endif %}">
+                                    {% if tx.type == "income" %}+{% else %}−{% endif %}{{ tx.amount|floatformat:"2g" }}
+                                    <small>{{ tx.currency }}</small>
+                                </span>
+                                {% if tx.confidence < 1 %}
+                                    <span class="confidence" title="ความมั่นใจของการอ่านใบเสร็จ">
+                                        AI {% widthratio tx.confidence 1 100 %}%
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td class="tx-chevron">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="m9 18 6-6-6-6"/>
+                                </svg>
                             </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+
+        <div class="empty-state empty-state-compact" data-filter-empty hidden>
+            <span class="empty-icon">🔍</span>
+            <h3 class="empty-title">ไม่พบรายการที่ตรงกัน</h3>
+            <p class="empty-description">ลองเปลี่ยนคำค้นหาหรือตัวกรองประเภท</p>
+        </div>
     {% else %}
         <div class="empty-state">
             <span class="empty-icon">🧾</span>
-
-            <h2 class="empty-title">
-                ยังไม่มีรายการ
-            </h2>
-
-            <p class="empty-description">
-                เมื่อเพิ่มรายรับหรือรายจ่าย รายการจะแสดงที่นี่
-            </p>
+            <h3 class="empty-title">ยังไม่มีรายการ</h3>
+            <p class="empty-description">เมื่อเพิ่มรายรับหรือรายจ่าย รายการจะแสดงที่นี่</p>
         </div>
     {% endif %}
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (() => {
+        const rows = [...document.querySelectorAll(".tx-row")];
+        if (!rows.length) return;
+
+        const searchInput = document.querySelector("[data-search-input]");
+        const filterButtons = [...document.querySelectorAll("[data-filter]")];
+        const visibleCount = document.querySelector("[data-visible-count]");
+        const emptyState = document.querySelector("[data-filter-empty]");
+        const tableScroll = document.querySelector(".table-scroll");
+        let activeFilter = "all";
+
+        function applyFilters() {
+            const query = searchInput.value.trim().toLowerCase();
+            let shown = 0;
+
+            rows.forEach((row) => {
+                const matchesType = activeFilter === "all" || row.dataset.type === activeFilter;
+                const matchesQuery = !query || row.dataset.search.includes(query);
+                row.hidden = !(matchesType && matchesQuery);
+                if (!row.hidden) shown += 1;
+            });
+
+            visibleCount.textContent = shown;
+            emptyState.hidden = shown > 0;
+            tableScroll.hidden = shown === 0;
+        }
+
+        searchInput.addEventListener("input", applyFilters);
+
+        filterButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                activeFilter = button.dataset.filter;
+                filterButtons.forEach((b) => {
+                    const active = b === button;
+                    b.classList.toggle("is-active", active);
+                    b.setAttribute("aria-pressed", String(active));
+                });
+                applyFilters();
+            });
+        });
+
+        // Whole row opens the edit form; the name link keeps keyboard/middle-click working
+        rows.forEach((row) => {
+            row.addEventListener("click", (event) => {
+                if (event.target.closest("a")) return;
+                window.location.href = row.dataset.url;
+            });
+        });
+    })();
+</script>
 {% endblock %}

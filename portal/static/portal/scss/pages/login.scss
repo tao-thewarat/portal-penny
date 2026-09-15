@@ -2,7 +2,6 @@
 
 $indigo-500: #6366f1;
 $indigo-600: #4f46e5;
-$indigo-900: #312e81;
 $discord: #5865f2;
 $discord-hover: #4752c4;
 $text: #111827;
@@ -188,62 +187,198 @@ body {
     font-size: 12px;
 }
 
-// Right: illustration
+// Right: abstract aurora artwork
 .auth-visual {
     position: relative;
     display: flex;
     overflow: hidden;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: 48px;
     border-radius: 28px;
-    background:
-        radial-gradient(circle at 85% 10%, rgba(255, 255, 255, 0.18), transparent 32%),
-        radial-gradient(circle at 10% 90%, rgba(129, 140, 248, 0.45), transparent 40%),
-        linear-gradient(145deg, $indigo-500, $indigo-600 45%, $indigo-900);
+    background: linear-gradient(160deg, #1e1b4b 0%, #0f172a 70%);
     color: #ffffff;
+    isolation: isolate;
 
     @media (max-width: $breakpoint-md) {
         display: none;
     }
 }
 
-.auth-visual-art {
-    display: grid;
-    flex: 1;
-    place-items: center;
-    padding: 24px 0;
+.auth-visual-bg {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
 
-    svg {
-        width: 100%;
-        max-width: 460px;
-        height: auto;
-        filter: drop-shadow(0 30px 50px rgba(17, 24, 39, 0.35));
+.aurora-blob {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+.aurora-blob-1 {
+    animation: drift-a 16s ease-in-out infinite;
+}
+
+.aurora-blob-2 {
+    animation: drift-b 20s ease-in-out infinite;
+}
+
+.aurora-blob-3 {
+    animation: drift-a 24s ease-in-out infinite reverse;
+}
+
+.orbit-spin {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: spin 60s linear infinite;
+}
+
+.orbit-spin-reverse {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: spin 90s linear infinite reverse;
+}
+
+@keyframes drift-a {
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(60px, 40px) scale(1.12);
     }
 }
 
-.float-slow {
-    animation: float 6s ease-in-out infinite;
+@keyframes drift-b {
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate(-70px, 50px) scale(0.92);
+    }
 }
 
-.float-fast {
-    animation: float 4s ease-in-out infinite reverse;
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-@keyframes float {
+@keyframes chip-float {
     0%,
     100% {
         transform: translateY(0);
     }
 
     50% {
-        transform: translateY(-10px);
+        transform: translateY(-8px);
+    }
+}
+
+// Frosted glass chips floating over the artwork
+.auth-chip {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px 10px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 24px 48px rgba(2, 6, 23, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(16px) saturate(140%);
+    animation: chip-float 7s ease-in-out infinite;
+}
+
+.auth-chip-top {
+    top: 14%;
+    left: 9%;
+}
+
+.auth-chip-bottom {
+    top: 52%;
+    right: 8%;
+    animation-delay: -3.5s;
+}
+
+.auth-chip-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    place-items: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #34d399, #059669);
+    box-shadow: 0 8px 18px rgba(16, 185, 129, 0.4);
+
+    svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.auth-chip-title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.auth-chip-text {
+    margin: 2px 0 0;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 11px;
+}
+
+.auth-avatars {
+    display: flex;
+
+    span {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border: 2px solid #1e1b4b;
+        border-radius: 50%;
+        font-size: 12px;
+        font-weight: 800;
+
+        & + span {
+            margin-left: -9px;
+        }
+
+        &:nth-child(1) {
+            background: linear-gradient(135deg, #f472b6, #db2777);
+        }
+
+        &:nth-child(2) {
+            background: linear-gradient(135deg, #22d3ee, #0891b2);
+        }
+
+        &:nth-child(3) {
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+        }
+
+        &:nth-child(4) {
+            background: $discord;
+        }
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .float-slow,
-    .float-fast {
+    .aurora-blob-1,
+    .aurora-blob-2,
+    .aurora-blob-3,
+    .orbit-spin,
+    .orbit-spin-reverse,
+    .auth-chip {
         animation: none;
     }
 }
@@ -254,14 +389,14 @@ body {
 
 .auth-visual-title {
     margin: 0;
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 800;
     line-height: 1.3;
 }
 
 .auth-visual-text {
     margin: 10px 0 0;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.7);
     font-size: 14px;
     line-height: 1.7;
 }

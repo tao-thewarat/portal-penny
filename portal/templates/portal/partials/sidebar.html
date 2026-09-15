@@ -1,47 +1,112 @@
 {% with url_name=request.resolver_match.url_name %}
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <div class="brand-icon">฿</div>
-        <div>
-            <p class="brand-name">Penny</p>
-            <p class="brand-description">Personal money tracker</p>
-        </div>
+    <div class="sidebar-top">
+        <a class="sidebar-brand" href="{% url 'transactions' %}">
+            <span class="brand-mark" aria-hidden="true">฿</span>
+            <span class="brand-text">
+                <span class="brand-name">Penny</span>
+                <span class="brand-description">Personal money tracker</span>
+            </span>
+        </a>
+
+        <button class="sidebar-close" type="button" data-sidebar-close aria-label="ปิดเมนู">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+        </button>
     </div>
 
-    <p class="sidebar-label">เมนูหลัก</p>
-    <nav class="sidebar-menu" aria-label="เมนูหลัก">
-        <a class="sidebar-link" href="#">
-            <span class="menu-icon">⌂</span>
-            <span>ภาพรวม</span>
-        </a>
-        <a
-            class="sidebar-link{% if url_name == 'transactions' %} active{% endif %}"
-            href="{% url 'transactions' %}"
-            {% if url_name == 'transactions' %}aria-current="page"{% endif %}
-        >
-            <span class="menu-icon">↕</span>
-            <span>รายการเงินเข้า–ออก</span>
-        </a>
-        <a class="sidebar-link" href="#">
-            <span class="menu-icon">◫</span>
-            <span>หมวดหมู่</span>
-        </a>
-        <a class="sidebar-link" href="#">
-            <span class="menu-icon">▥</span>
-            <span>รายงาน</span>
-        </a>
+    <nav class="sidebar-nav" aria-label="เมนูหลัก">
+        <p class="sidebar-label">เมนูหลัก</p>
+        <ul class="sidebar-menu">
+            <li>
+                <span class="sidebar-link is-disabled" aria-disabled="true">
+                    <span class="sidebar-link-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="3" width="7" height="9" rx="1.5"/>
+                            <rect x="14" y="3" width="7" height="5" rx="1.5"/>
+                            <rect x="14" y="12" width="7" height="9" rx="1.5"/>
+                            <rect x="3" y="16" width="7" height="5" rx="1.5"/>
+                        </svg>
+                    </span>
+                    <span class="sidebar-link-text">ภาพรวม</span>
+                    <span class="sidebar-badge">เร็วๆ นี้</span>
+                </span>
+            </li>
+            <li>
+                <a
+                    class="sidebar-link{% if url_name == 'transactions' or url_name == 'transaction_form' %} is-active{% endif %}"
+                    href="{% url 'transactions' %}"
+                    {% if url_name == 'transactions' %}aria-current="page"{% endif %}
+                >
+                    <span class="sidebar-link-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M8 3 4 7l4 4"/>
+                            <path d="M4 7h16"/>
+                            <path d="m16 21 4-4-4-4"/>
+                            <path d="M20 17H4"/>
+                        </svg>
+                    </span>
+                    <span class="sidebar-link-text">รายการเงินเข้า–ออก</span>
+                </a>
+            </li>
+            <li>
+                <span class="sidebar-link is-disabled" aria-disabled="true">
+                    <span class="sidebar-link-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 2H2v10l9.29 9.29a1 1 0 0 0 1.41 0l8.59-8.59a1 1 0 0 0 0-1.41z"/>
+                            <path d="M7 7h.01"/>
+                        </svg>
+                    </span>
+                    <span class="sidebar-link-text">หมวดหมู่</span>
+                    <span class="sidebar-badge">เร็วๆ นี้</span>
+                </span>
+            </li>
+            <li>
+                <span class="sidebar-link is-disabled" aria-disabled="true">
+                    <span class="sidebar-link-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M3 3v18h18"/>
+                            <path d="M18 17V9"/>
+                            <path d="M13 17V5"/>
+                            <path d="M8 17v-3"/>
+                        </svg>
+                    </span>
+                    <span class="sidebar-link-text">รายงาน</span>
+                    <span class="sidebar-badge">เร็วๆ นี้</span>
+                </span>
+            </li>
+        </ul>
+
+        <p class="sidebar-label">ระบบ</p>
+        <ul class="sidebar-menu">
+            <li>
+                <span class="sidebar-link is-disabled" aria-disabled="true">
+                    <span class="sidebar-link-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>
+                        </svg>
+                    </span>
+                    <span class="sidebar-link-text">ตั้งค่า</span>
+                    <span class="sidebar-badge">เร็วๆ นี้</span>
+                </span>
+            </li>
+        </ul>
     </nav>
 
-    <p class="sidebar-label">ระบบ</p>
-    <nav class="sidebar-menu" aria-label="เมนูระบบ">
-        <a class="sidebar-link" href="#">
-            <span class="menu-icon">⚙</span>
-            <span>ตั้งค่า</span>
-        </a>
-    </nav>
-
-    <div class="sidebar-footer">
-        Penny Portal · 2026
+    <div class="sidebar-card">
+        <span class="sidebar-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.865-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.028C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.292a.074.074 0 0 1 .078-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+            </svg>
+        </span>
+        <p class="sidebar-card-title">บันทึกผ่าน Discord</p>
+        <p class="sidebar-card-text">ส่งรูปใบเสร็จผ่าน Discord ระบบจะอ่านและบันทึกรายการให้อัตโนมัติ</p>
     </div>
+
+    <footer class="sidebar-footer">
+        <span>Penny Portal</span>
+        <span>© 2026</span>
+    </footer>
 </aside>
 {% endwith %}

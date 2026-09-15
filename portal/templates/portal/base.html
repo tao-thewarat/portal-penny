@@ -52,6 +52,7 @@
         });
 
         sidebarOverlay.addEventListener("click", () => setSidebar(false));
+        document.querySelector("[data-sidebar-close]").addEventListener("click", () => setSidebar(false));
 
         window.addEventListener("keydown", (event) => {
             if (event.key === "Escape") setSidebar(false);

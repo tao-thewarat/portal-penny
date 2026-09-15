@@ -1,0 +1,40 @@
+// Category colour tones (background + foreground) and the emoji icon tile.
+// Shared by the transaction list and the edit form.
+$tones: (
+    orange: (#fff7ed, #ea580c),
+    green: (#f0fdf4, #16a34a),
+    pink: (#fdf2f8, #db2777),
+    blue: (#eff6ff, #2563eb),
+    sky: (#f0f9ff, #0284c7),
+    amber: (#fffbeb, #d97706),
+    slate: (#f1f5f9, #475569),
+    violet: (#f5f3ff, #7c3aed),
+    red: (#fef2f2, #dc2626),
+    cyan: (#ecfeff, #0891b2),
+    emerald: (#ecfdf5, #059669),
+    teal: (#f0fdfa, #0d9488),
+    indigo: (#eef2ff, #4f46e5),
+    rose: (#fff1f2, #e11d48),
+    fuchsia: (#fdf4ff, #c026d3),
+    yellow: (#fefce8, #ca8a04),
+    lime: (#f7fee7, #65a30d),
+);
+
+@each $name, $pair in $tones {
+    .tone-#{$name} {
+        --tone-bg: #{nth($pair, 1)};
+        --tone-fg: #{nth($pair, 2)};
+    }
+}
+
+.category-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--tone-bg);
+    font-size: 19px;
+    line-height: 1;
+}

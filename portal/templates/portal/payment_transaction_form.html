@@ -1,126 +1,353 @@
 {% extends "portal/base.html" %}
-{% load sass_version %}
+{% load sass_version transaction_ui %}
 
-{% block title %}
-    แก้ไขรายการ
-{% endblock %}
+{% block title %}แก้ไข {{ tx.name }} · Penny{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% sass_src_v 'portal/scss/pages/payment_transaction_form.scss' %}">
 {% endblock %}
 
 {% block content %}
-<div class="transaction-page">
-    <header class="transaction-header">
-        <div class="transaction-title-group">
-            <div class="transaction-title-icon">
-                ✎
-            </div>
+{% category_choices as categories %}
 
-            <div>
-                <h1 class="page-title">
-                    แก้ไขรายการ
-                </h1>
+<div class="edit-page">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+        <a href="{% url 'transactions' %}">รายการเงินเข้า–ออก</a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m9 18 6-6-6-6"/>
+        </svg>
+        <span aria-current="page">แก้ไขรายการ #{{ tx.pk }}</span>
+    </nav>
 
-                <p class="transaction-reference">
-                    Transaction #{{ transaction.pk }}
-                </p>
-            </div>
+    <header class="edit-header">
+        <div>
+            <h1 class="edit-title">แก้ไขรายการ</h1>
+            <p class="edit-subtitle">
+                รหัส #{{ tx.pk }} · บันทึกเมื่อ {{ tx.created_at|date:"d/m/Y H:i" }}
+            </p>
         </div>
 
-        <a
-            href="{% url 'transactions' %}"
-            class="back-button"
-        >
-            <span aria-hidden="true">←</span>
-            <span>กลับหน้ารายการ</span>
+        <a class="btn btn-ghost" href="{% url 'transactions' %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            กลับหน้ารายการ
         </a>
     </header>
 
-    <section class="form-card">
-        <div class="form-card-header">
-            <div>
-                <h2 class="form-card-title">
-                    ข้อมูลรายการ
-                </h2>
+    <form method="post" class="edit-layout" data-edit-form>
+        {% csrf_token %}
 
-                <p class="form-card-description">
-                    ตรวจสอบและแก้ไขรายละเอียดให้ถูกต้อง
-                </p>
-            </div>
-
-            <span class="required-hint">
-                <span class="required-mark">*</span>
-                ข้อมูลที่จำเป็น
-            </span>
-        </div>
-
-        <div class="form-card-body">
-            <form method="post" class="transaction-form">
-                {% csrf_token %}
-
-                {% if form.non_field_errors %}
-                    <div class="form-alert">
+        <div class="edit-main">
+            {% if form.errors %}
+                <div class="form-alert" role="alert">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                    <div>
+                        <strong>บันทึกไม่สำเร็จ</strong>
+                        <p>กรุณาตรวจสอบช่องที่ไฮไลต์สีแดง</p>
                         {{ form.non_field_errors }}
                     </div>
-                {% endif %}
+                </div>
+            {% endif %}
 
-                <div class="transaction-form-grid">
-                    {% for field in form %}
-                        <div
-                            class="
-                                form-field
-                                {% if field.name == 'note' or field.name == 'source_text' %}
-                                    full-width
+            <section class="form-section">
+                <div class="section-heading">
+                    <span class="section-step">1</span>
+                    <div>
+                        <h2 class="section-title">ประเภทและจำนวนเงิน</h2>
+                        <p class="section-description">เลือกว่าเป็นเงินเข้าหรือเงินออก แล้วระบุยอดเงิน</p>
+                    </div>
+                </div>
+
+                <div class="type-options" role="radiogroup" aria-label="{{ form.type.label }}">
+                    {% for radio in form.type %}
+                        <label class="type-option type-option-{{ radio.data.value }}">
+                            {{ radio.tag }}
+                            <span class="type-option-icon" aria-hidden="true">
+                                {% if radio.data.value == "income" %}
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+                                {% else %}
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7 7 17M15 17H7V9"/></svg>
                                 {% endif %}
-                            "
-                        >
-                            <label
-                                for="{{ field.id_for_label }}"
-                                class="form-label"
-                            >
-                                {{ field.label }}
+                            </span>
+                            <span class="type-option-text">
+                                <span class="type-option-title">
+                                    {% if radio.data.value == "income" %}รายรับ{% else %}รายจ่าย{% endif %}
+                                </span>
+                                <span class="type-option-description">
+                                    {% if radio.data.value == "income" %}เงินเข้าบัญชี{% else %}เงินออกจากบัญชี{% endif %}
+                                </span>
+                            </span>
+                            <span class="type-option-check" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                            </span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% for error in form.type.errors %}
+                    <p class="field-error">{{ error }}</p>
+                {% endfor %}
 
-                                {% if field.field.required %}
-                                    <span class="required-mark">*</span>
-                                {% endif %}
-                            </label>
+                <div class="field{% if form.amount.errors or form.currency.errors %} has-error{% endif %}">
+                    <label class="field-label" for="{{ form.amount.id_for_label }}">
+                        {{ form.amount.label }}
+                        <span class="field-required" aria-hidden="true">*</span>
+                    </label>
 
-                            {{ field }}
+                    <div class="amount-input">
+                        <span class="amount-sign" data-amount-sign aria-hidden="true">
+                            {% if tx.type == "income" %}+{% else %}−{% endif %}
+                        </span>
+                        {{ form.amount }}
+                        {{ form.currency }}
+                    </div>
 
-                            {% if field.help_text %}
-                                <div class="field-help">
-                                    {{ field.help_text }}
-                                </div>
-                            {% endif %}
+                    {% for error in form.amount.errors %}
+                        <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                    {% for error in form.currency.errors %}
+                        <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </section>
 
-                            {% for error in field.errors %}
-                                <div class="field-error">
-                                    {{ error }}
-                                </div>
-                            {% endfor %}
-                        </div>
+            <section class="form-section">
+                <div class="section-heading">
+                    <span class="section-step">2</span>
+                    <div>
+                        <h2 class="section-title">ข้อมูลรายการ</h2>
+                        <p class="section-description">ชื่อร้าน หมวดหมู่ วันที่ และโน้ต</p>
+                    </div>
+                </div>
+
+                <div class="field-grid">
+                    <div class="field-span-2">
+                        {% include "portal/partials/form_field.html" with field=form.name %}
+                    </div>
+
+                    {% include "portal/partials/form_field.html" with field=form.category hint="รายการหมวดหมู่จะเปลี่ยนตามประเภทที่เลือก" %}
+                    {% include "portal/partials/form_field.html" with field=form.occurred_at %}
+
+                    <div class="field-span-2">
+                        {% include "portal/partials/form_field.html" with field=form.note %}
+                    </div>
+                </div>
+
+                <datalist id="category-options">
+                    {% for category in categories %}
+                        <option value="{{ category.value }}" data-type="{{ category.type }}">{{ category.icon }} {{ category.label }}</option>
+                    {% endfor %}
+                </datalist>
+            </section>
+
+            <section class="form-section">
+                <div class="section-heading">
+                    <span class="section-step">3</span>
+                    <div>
+                        <h2 class="section-title">ข้อมูลจากการอ่านใบเสร็จ</h2>
+                        <p class="section-description">ค่าที่ AI อ่านได้ ใช้ตรวจสอบความถูกต้องของรายการ</p>
+                    </div>
+                </div>
+
+                <div class="field{% if form.confidence.errors %} has-error{% endif %}">
+                    <div class="field-label-row">
+                        <label class="field-label" for="{{ form.confidence.id_for_label }}">
+                            {{ form.confidence.label }}
+                        </label>
+                        <span class="confidence-value" data-confidence-value></span>
+                    </div>
+
+                    {{ form.confidence }}
+
+                    <div class="confidence-scale" aria-hidden="true">
+                        <span>0%</span>
+                        <span>50%</span>
+                        <span>100%</span>
+                    </div>
+
+                    {% for error in form.confidence.errors %}
+                        <p class="field-error">{{ error }}</p>
                     {% endfor %}
                 </div>
 
-                <div class="form-actions">
-                    <a
-                        href="{% url 'transactions' %}"
-                        class="action-button cancel-button"
-                    >
-                        ยกเลิก
-                    </a>
-
-                    <button
-                        type="submit"
-                        class="action-button save-button"
-                    >
-                        <span aria-hidden="true">✓</span>
-                        บันทึกข้อมูล
-                    </button>
-                </div>
-            </form>
+                {% include "portal/partials/form_field.html" with field=form.source_text %}
+                {% include "portal/partials/form_field.html" with field=form.user_id hint="ผูกกับบัญชี Discord ของเจ้าของรายการ แก้ไขไม่ได้" %}
+            </section>
         </div>
-    </section>
+
+        <aside class="edit-aside">
+            <div class="preview-card">
+                <p class="preview-label">ตัวอย่างในหน้ารายการ</p>
+
+                <div class="preview-head">
+                    <span class="category-icon tone-{{ tx.category|category_tone }}" data-preview-icon>{{ tx.category|category_icon }}</span>
+                    <div class="preview-identity">
+                        <p class="preview-name" data-preview-name>{{ tx.name }}</p>
+                        <p class="preview-category" data-preview-category>{{ tx.category|category_label }}</p>
+                    </div>
+                </div>
+
+                <p class="preview-amount" data-preview-amount>
+                    {% if tx.type == "income" %}+{% else %}−{% endif %}{{ tx.amount|floatformat:"2g" }} {{ tx.currency }}
+                </p>
+
+                <dl class="preview-meta">
+                    <div>
+                        <dt>ประเภท</dt>
+                        <dd data-preview-type>{% if tx.type == "income" %}รายรับ{% else %}รายจ่าย{% endif %}</dd>
+                    </div>
+                    <div>
+                        <dt>วันที่</dt>
+                        <dd data-preview-date>{{ tx.occurred_at|date:"d/m/Y" }}</dd>
+                    </div>
+                    <div>
+                        <dt>ความมั่นใจ</dt>
+                        <dd class="preview-confidence">
+                            <span class="preview-meter" data-preview-meter><span></span></span>
+                            <span data-preview-confidence></span>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+
+            <div class="action-card">
+                <p class="dirty-indicator" data-dirty-indicator hidden>
+                    <span class="dirty-dot"></span>
+                    มีการเปลี่ยนแปลงที่ยังไม่บันทึก
+                </p>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                    บันทึกการเปลี่ยนแปลง
+                </button>
+
+                <a class="btn btn-secondary btn-block" href="{% url 'transactions' %}">ยกเลิก</a>
+            </div>
+        </aside>
+    </form>
 </div>
+
+{{ categories|json_script:"category-meta" }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (() => {
+        const form = document.querySelector("[data-edit-form]");
+        if (!form) return;
+
+        const categories = JSON.parse(document.getElementById("category-meta").textContent);
+        const categoryByValue = Object.fromEntries(categories.map((c) => [c.value, c]));
+        const pick = (selector) => form.querySelector(selector);
+
+        const fields = {
+            name: pick("[name=name]"),
+            amount: pick("[name=amount]"),
+            currency: pick("[name=currency]"),
+            category: pick("[name=category]"),
+            date: pick("[name=occurred_at]"),
+            confidence: pick("[name=confidence]"),
+        };
+
+        const preview = {
+            icon: pick("[data-preview-icon]"),
+            name: pick("[data-preview-name]"),
+            category: pick("[data-preview-category]"),
+            amount: pick("[data-preview-amount]"),
+            type: pick("[data-preview-type]"),
+            date: pick("[data-preview-date]"),
+            meter: pick("[data-preview-meter]"),
+            confidence: pick("[data-preview-confidence]"),
+        };
+
+        const categoryOptions = document.getElementById("category-options");
+        const amountSign = pick("[data-amount-sign]");
+        const confidenceValue = pick("[data-confidence-value]");
+        const dirtyIndicator = pick("[data-dirty-indicator]");
+        const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        // The bot only allows expense categories on expenses and income categories on income
+        function syncCategoryOptions() {
+            const checkedType = pick("[name=type]:checked");
+            const type = checkedType ? checkedType.value : "expense";
+            categoryOptions.replaceChildren(
+                ...categories
+                    .filter((category) => category.type === type)
+                    .map((category) => {
+                        const option = document.createElement("option");
+                        option.value = category.value;
+                        option.textContent = `${category.icon} ${category.label}`;
+                        return option;
+                    }),
+            );
+        }
+
+        function updatePreview() {
+            const checkedType = pick("[name=type]:checked");
+            const isIncome = checkedType ? checkedType.value === "income" : false;
+            const sign = isIncome ? "+" : "−";
+
+            const amount = parseFloat(fields.amount.value);
+            const currency = (fields.currency.value || "THB").toUpperCase();
+            preview.amount.textContent = `${sign}${Number.isFinite(amount) ? money.format(amount) : "0.00"} ${currency}`;
+            preview.amount.classList.toggle("is-income", isIncome);
+            preview.amount.classList.toggle("is-expense", !isIncome);
+            preview.type.textContent = isIncome ? "รายรับ" : "รายจ่าย";
+            amountSign.textContent = sign;
+            amountSign.classList.toggle("is-income", isIncome);
+
+            preview.name.textContent = fields.name.value.trim() || "ยังไม่ได้ตั้งชื่อรายการ";
+
+            const categoryValue = fields.category.value.trim();
+            const category = categoryByValue[categoryValue];
+            preview.icon.textContent = category ? category.icon : "📦";
+            preview.icon.className = `category-icon tone-${category ? category.tone : "slate"}`;
+            preview.category.textContent = category ? category.label : (categoryValue || "ยังไม่ได้เลือกหมวดหมู่");
+
+            const [year, month, day] = (fields.date.value || "").split("-");
+            preview.date.textContent = day ? `${day}/${month}/${year}` : "—";
+
+            const percent = Math.round((parseFloat(fields.confidence.value) || 0) * 100);
+            const level = percent >= 90 ? "high" : percent >= 70 ? "medium" : "low";
+            confidenceValue.textContent = `${percent}%`;
+            confidenceValue.dataset.level = level;
+            preview.confidence.textContent = `${percent}%`;
+            preview.meter.dataset.level = level;
+            preview.meter.style.setProperty("--fill", `${percent}%`);
+            fields.confidence.style.setProperty("--fill", `${percent}%`);
+        }
+
+        // Track unsaved edits so the user is warned before leaving the page
+        const snapshot = () => JSON.stringify(
+            [...new FormData(form).entries()].filter(([key]) => key !== "csrfmiddlewaretoken"),
+        );
+        const initialState = snapshot();
+        let submitting = false;
+
+        function onChange() {
+            syncCategoryOptions();
+            updatePreview();
+            dirtyIndicator.hidden = snapshot() === initialState;
+        }
+
+        form.addEventListener("input", onChange);
+        form.addEventListener("change", onChange);
+        form.addEventListener("submit", () => { submitting = true; });
+
+        window.addEventListener("beforeunload", (event) => {
+            if (!submitting && snapshot() !== initialState) {
+                event.preventDefault();
+                event.returnValue = "";
+            }
+        });
+
+        syncCategoryOptions();
+        updatePreview();
+    })();
+</script>
 {% endblock %}

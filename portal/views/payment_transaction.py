@@ -1,7 +1,9 @@
+from decimal import Decimal
 from typing import ClassVar
 
 from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -12,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from portal.forms import PaymentTransactionForm
-from portal.models.payment_transaction import PaymentTransaction
+from portal.models.payment_transaction import EntryType, PaymentTransaction
 from portal.serializers.payment_transaction import PaymentTransactionSerializer
 
 
@@ -39,11 +41,37 @@ class PaymentTransactionView(APIView):
             "-occurred_at",
             "-created_at",
         )
+        zero = Decimal(0)
+        summary = tx.aggregate(
+            income=Sum("amount", filter=Q(type=EntryType.INCOME), default=zero),
+            expense=Sum("amount", filter=Q(type=EntryType.EXPENSE), default=zero),
+            income_count=Count("id", filter=Q(type=EntryType.INCOME)),
+            expense_count=Count("id", filter=Q(type=EntryType.EXPENSE)),
+        )
+        summary["balance"] = summary["income"] - summary["expense"]
+        summary["balance_abs"] = abs(summary["balance"])
+        summary["count"] = summary["income_count"] + summary["expense_count"]
+
+        expense_by_category = list(
+            tx.filter(type=EntryType.EXPENSE)
+            .values("category")
+            .annotate(total=Sum("amount"), count=Count("id"))
+            .order_by("-total")
+        )
+        for row in expense_by_category:
+            row["percent"] = (
+                float(row["total"] / summary["expense"] * 100)
+                if summary["expense"]
+                else 0.0
+            )
+
         return render(
             request=request,
             template_name="portal/payment_transaction.html",
             context={
                 "transactions": tx,
+                "summary": summary,
+                "expense_by_category": expense_by_category,
             },
         )
 
