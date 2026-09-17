@@ -179,6 +179,97 @@
         </div>
 
         <aside class="edit-aside">
+            {% with images=tx.images.all %}
+                <div class="receipt-card">
+                    <div class="receipt-card-header">
+                        <p class="preview-label">รูปใบเสร็จ</p>
+                        {% if images %}
+                            <span class="receipt-count">{{ images|length }} รูป</span>
+                        {% endif %}
+                    </div>
+
+                    {% if images %}
+                        <div class="receipt-gallery{% if images|length == 1 %} is-single{% endif %}">
+                            {% for image in images %}
+                                <button
+                                    type="button"
+                                    class="receipt-thumb{% if forloop.first %} is-primary{% endif %}"
+                                    data-receipt-open="{{ forloop.counter0 }}"
+                                    aria-label="ดูรูปใบเสร็จที่ {{ forloop.counter }}"
+                                >
+                                    <img
+                                        src="{{ image.image_url }}"
+                                        alt="รูปใบเสร็จที่ {{ forloop.counter }}"
+                                        loading="lazy"
+                                        referrerpolicy="no-referrer"
+                                        data-receipt-img
+                                    >
+                                    <span class="receipt-thumb-fallback" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="m2 2 20 20"/>
+                                            <path d="M10.41 10.41a2 2 0 1 1-2.83-2.83"/>
+                                            <path d="M13.5 13.5 6 21"/>
+                                            <path d="m18 12 3 3"/>
+                                            <path d="M3.59 3.59A1.99 1.99 0 0 0 3 5v14a2 2 0 0 0 2 2h14c.55 0 1.052-.22 1.41-.59"/>
+                                            <path d="M21 15V5a2 2 0 0 0-2-2H9"/>
+                                        </svg>
+                                        <span>โหลดรูปไม่ได้</span>
+                                    </span>
+                                    {% if forloop.first %}
+                                        <span class="receipt-thumb-zoom" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                                            </svg>
+                                            ขยาย
+                                        </span>
+                                    {% endif %}
+                                </button>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="receipt-empty">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <circle cx="9" cy="9" r="2"/>
+                                <path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>
+                            </svg>
+                            <p>ไม่มีรูปแนบกับรายการนี้</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if images %}
+                    <dialog class="receipt-viewer" data-receipt-viewer aria-label="ดูรูปใบเสร็จ">
+                        <div class="receipt-viewer-toolbar">
+                            <span class="receipt-viewer-counter" data-receipt-counter></span>
+                            <div class="receipt-viewer-actions">
+                                <a class="receipt-viewer-button" data-receipt-original target="_blank" rel="noopener noreferrer">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    </svg>
+                                    เปิดรูปต้นฉบับ
+                                </a>
+                                <button type="button" class="receipt-viewer-button is-icon" data-receipt-close aria-label="ปิด">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M18 6 6 18M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="receipt-viewer-stage">
+                            <button type="button" class="receipt-viewer-nav" data-receipt-prev aria-label="รูปก่อนหน้า"{% if images|length == 1 %} hidden{% endif %}>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                            </button>
+                            <img class="receipt-viewer-image" data-receipt-viewer-img alt="" referrerpolicy="no-referrer">
+                            <button type="button" class="receipt-viewer-nav" data-receipt-next aria-label="รูปถัดไป"{% if images|length == 1 %} hidden{% endif %}>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                        </div>
+                    </dialog>
+                {% endif %}
+            {% endwith %}
+
             <div class="preview-card">
                 <p class="preview-label">ตัวอย่างในหน้ารายการ</p>
 
@@ -348,6 +439,58 @@
 
         syncCategoryOptions();
         updatePreview();
+    })();
+</script>
+
+<script>
+    (() => {
+        const thumbs = [...document.querySelectorAll("[data-receipt-open]")];
+        const viewer = document.querySelector("[data-receipt-viewer]");
+        if (!thumbs.length || !viewer) return;
+
+        const images = thumbs.map((thumb) => thumb.querySelector("[data-receipt-img]"));
+        const viewerImage = viewer.querySelector("[data-receipt-viewer-img]");
+        const counter = viewer.querySelector("[data-receipt-counter]");
+        const original = viewer.querySelector("[data-receipt-original]");
+        let current = 0;
+
+        // Discord attachment links expire; show a clear placeholder instead of a broken icon
+        const markBroken = (img) => img.closest("[data-receipt-open]").classList.add("is-broken");
+        images.forEach((img) => {
+            img.addEventListener("error", () => markBroken(img));
+            if (img.complete && img.naturalWidth === 0) markBroken(img);
+        });
+
+        function show(index) {
+            current = (index + images.length) % images.length;
+            const src = images[current].getAttribute("src");
+            viewerImage.src = src;
+            viewerImage.alt = images[current].alt;
+            original.href = src;
+            counter.textContent = `${current + 1} / ${images.length}`;
+        }
+
+        thumbs.forEach((thumb, index) => {
+            thumb.addEventListener("click", () => {
+                show(index);
+                viewer.showModal();
+            });
+        });
+
+        viewer.querySelector("[data-receipt-close]").addEventListener("click", () => viewer.close());
+        viewer.querySelector("[data-receipt-prev]").addEventListener("click", () => show(current - 1));
+        viewer.querySelector("[data-receipt-next]").addEventListener("click", () => show(current + 1));
+
+        // Click on the dimmed backdrop (outside the content) closes the viewer
+        viewer.addEventListener("click", (event) => {
+            if (event.target === viewer) viewer.close();
+        });
+
+        viewer.addEventListener("keydown", (event) => {
+            if (images.length < 2) return;
+            if (event.key === "ArrowLeft") show(current - 1);
+            if (event.key === "ArrowRight") show(current + 1);
+        });
     })();
 </script>
 {% endblock %}

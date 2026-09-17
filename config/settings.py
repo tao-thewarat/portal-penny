@@ -31,7 +31,30 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    if host.strip()
+]
+
+# Needed for form POSTs (login, logout, edit) when served from another origin/https
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
+# Behind a TLS-terminating proxy (nginx, Cloudflare, ...) trust its
+# X-Forwarded-Proto so Discord OAuth builds https callback URLs.
+# Only enable when the proxy always sets this header.
+if os.getenv("TRUST_PROXY_HEADERS", "False").lower() == "true":
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+R2_PUBLIC_BASE_URL = os.getenv(
+    "R2_PUBLIC_BASE_URL",
+    "",
+).rstrip("/")
 
 # Shared secret the Penny Discord bot sends as `Authorization: Bearer <token>`
 # to POST /api/transactions. Leave it empty to refuse every bot write.
@@ -62,6 +85,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -69,6 +93,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "portal.middleware.RedirectAuthenticatedFromLoginMiddleware",
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -146,7 +171,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Bangkok"
 
 USE_I18N = True
 
@@ -167,6 +192,17 @@ STATICFILES_FINDERS = [
 
 # Compiled SCSS output; in DEBUG it compiles on request, otherwise run `compilescss`
 SASS_PROCESSOR_ROOT = STATIC_ROOT
+
+# WhiteNoise serves static files when DEBUG=False (e.g. in Docker).
+# No manifest hashing: {% sass_src_v %} already cache-busts with ?v=<mtime>.
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 
 # Email

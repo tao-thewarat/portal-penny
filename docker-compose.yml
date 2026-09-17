@@ -3,13 +3,14 @@ services:
     image: postgres:17
     container_name: db
     environment:
-      POSTGRES_DB: portal_penny_db
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: ${DB_NAME:-portal_penny_db}
+      POSTGRES_USER: ${DB_USER:-root}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-123}
     ports:
       - "5432:5432"
     volumes:
       - data:/var/lib/postgresql/data
+    restart: unless-stopped
 
 volumes:
   data:
