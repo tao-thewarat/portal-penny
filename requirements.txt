@@ -10,6 +10,7 @@ django-allauth==65.19.3
 django-sass-processor==1.4.2
 djangorestframework==3.18.1
 filelock==3.32.6
+gunicorn==26.2.0
 identify==2.6.19
 idna==3.19
 libsass==0.23.0
@@ -29,3 +30,4 @@ ruff==0.16.7
 sqlparse==0.6.0
 urllib3==2.7.0
 virtualenv==21.7.9
+whitenoise==6.12.0

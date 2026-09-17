@@ -2,6 +2,7 @@ from decimal import Decimal
 from typing import ClassVar
 
 from allauth.socialaccount.models import SocialAccount
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q, Sum
 from django.shortcuts import get_object_or_404, redirect, render
@@ -34,7 +35,8 @@ class PaymentTransactionView(APIView):
                 provider="discord",
             ).first()
         ):
-            return redirect("accounts/discord/login/")
+            logout(request)
+            return redirect("discord_login")
 
         tx = PaymentTransaction.objects.filter(
             user_id=user.uid,
